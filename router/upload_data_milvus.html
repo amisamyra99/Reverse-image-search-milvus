@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Images</title>
+</head>
+<body>
+    <h1>Upload Images to Milvus</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="files">Select images to upload:</label>
+        <input type="file" id="files" name="files" multiple accept="image/*"><br><br>
+        <button type="submit">Upload Images</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            const files = document.getElementById('files').files;
+
+            if (files.length === 0) {
+                alert('Please select at least one image.');
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/upload-images/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('result').innerText = 'Error uploading images: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
